@@ -15,19 +15,19 @@ cities = ['Amsterdam', 'Rotterdam', 'Utrecht', 'Eindhoven', 'Enschede']
 drivers = [f'driver_{i}' for i in range(1, 101)]
 
 def random_lat_lon():
-    return (random.uniform(51.0, 54.0), random.uniform(4.0, 7.0))
+    return round(random.uniform(51.0, 54.0), 6), round(random.uniform(4.0, 7.0), 6)
 
 
 while True:
     lat, lon = random_lat_lon()
     event = {
         "driver_id": f'driver-{random.randint(1, 1000)}',
-        "event_type": random.choice(['pickup', 'dropoff', 'location_update']),
-        lat: lat,
-        lon: lon,
+        "event_type": random.choice(['location_update']),
+        "lat": lat,
+        "lon": lon,
         "timestamp": int(time.time())
     }
 
     producer.send(topic, event)
     print(f"Produced: {event}")
-    time.sleep(0.1)
+    time.sleep(1)
