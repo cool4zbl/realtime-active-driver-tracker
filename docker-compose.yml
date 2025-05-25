@@ -18,3 +18,35 @@ services:
     image: redis:alpine
     ports:
       - "6379:6379"
+
+  flink:
+    image: flink:1.17-scala_2.12
+    command:
+      - jobmanager
+    ports:
+      - "8081:8081"
+    environment:
+      - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
+
+  flink-taskmanager:
+    image: flink:1.17-scala_2.12
+    command:
+      - taskmanager
+    environment:
+      - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
+    depends_on:
+      - flink
+
+#  heatmap-job:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    image: heatmap-job:latest
+#    environment:
+#      - KAFKA_BROKER=kafka:9092
+#      - REDIS_HOST=redis
+#    depends_on:
+#      - kafka
+#      - flink
+#    command: >
+#      flink run -c com.example.HeatmapJob /opt/flink/usrlib/geo-heatmap-flink-1.0-SNAPSHOT.jar
