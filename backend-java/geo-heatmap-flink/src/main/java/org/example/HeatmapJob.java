@@ -17,6 +17,7 @@ public class HeatmapJob {
 
         env.addSource(consumer)
                 .map(value -> "Received: " + value)
+                .returns(String.class)
                 .print();
 
         // Execute the Flink job
@@ -45,6 +46,8 @@ public class HeatmapJob {
                 new SimpleStringSchema(),
                 props
         );
+
+        consumer.setStartFromEarliest();
 
         // Process the input data to create a heatmap
 //        input
