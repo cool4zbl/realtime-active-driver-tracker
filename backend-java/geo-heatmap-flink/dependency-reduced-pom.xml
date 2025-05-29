@@ -33,6 +33,6 @@
     <java.version>1.8</java.version>
     <maven.compiler.source>21</maven.compiler.source>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <flink.version>1.14.3</flink.version>
+    <flink.version>1.14.6</flink.version>
   </properties>
 </project>

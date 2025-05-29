@@ -19,8 +19,8 @@ services:
     ports:
       - "6379:6379"
 
-  flink:
-    image: flink:2.0.0-scala_2.12-java21
+  flink-jobmanager:
+    image: flink:1.20.1
     command:
       - jobmanager
     ports:
@@ -29,24 +29,23 @@ services:
       - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
 
   flink-taskmanager:
-    image: flink:2.0.0-scala_2.12-java21
+    image: flink:1.20.1
     command:
       - taskmanager
     environment:
       - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
     depends_on:
-      - flink
+      - flink-jobmanager
 
-#  heatmap-job:
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#    image: heatmap-job:latest
-#    environment:
-#      - KAFKA_BROKER=kafka:9092
-#      - REDIS_HOST=redis
-#    depends_on:
-#      - kafka
-#      - flink
-#    command: >
-#      flink run -c com.example.HeatmapJob /opt/flink/usrlib/geo-heatmap-flink-1.0-SNAPSHOT.jar
+  heatmap-job:
+    build:
+      context: .
+    image: heatmap-job:latest
+    environment:
+      - KAFKA_BROKER=kafka:9092
+      - REDIS_HOST=redis
+    depends_on:
+      - kafka
+      - flink-jobmanager
+    command: >
+      flink run -m flink-jobmanager:8081 -c org.example.HeatmapJob /opt/flink/usrlib/geo-heatmap-flink-1.0-SNAPSHOT.jar
