@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.example;
+package org.example.task;
 
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
