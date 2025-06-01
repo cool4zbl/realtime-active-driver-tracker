@@ -14,6 +14,7 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.ProcessFunction;
+import org.apache.flink.streaming.api.functions.sink.v2.DiscardingSink;
 import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
@@ -32,6 +33,9 @@ public class HeatmapJob {
         // Initialize the Flink execution environment
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
+        env.enableCheckpointing(10_000);
+        env.getCheckpointConfig().setMinPauseBetweenCheckpoints(5_000);
+
         // Define the data source, from kafka topic "driver-logs"
         KafkaSource<String> kafkaSource = KafkaSource.<String>builder()
                 .setBootstrapServers("localhost:9092")
@@ -45,6 +49,12 @@ public class HeatmapJob {
                 .build();
 
         DataStreamSource<String> raw = env.fromSource(kafkaSource, WatermarkStrategy.noWatermarks(), "kafka-source");
+//        raw.map(x -> {
+//                    System.out.println("DEBUG received from kafka source=" + x); // For debugging, remove in production
+//                    return x;
+//                })
+//                .sinkTo(new DiscardingSink<>());
+
 
         // Process the input data to get DriverEvent objects & timestamp handling
         ObjectMapper objectMapper = new ObjectMapper();
@@ -55,7 +65,7 @@ public class HeatmapJob {
                     public void processElement(String line, Context ctx, Collector<DriverEvent> out) {
                         try {
                             DriverEvent e = objectMapper.readValue(line, DriverEvent.class);
-                            ctx.output(null, e);
+//                            ctx.output(null, e);
                             out.collect(e);
                         } catch (Exception e) {
                             System.err.println("Failed to parse event: " + line + ", error: " + e.getMessage());
@@ -125,9 +135,6 @@ public class HeatmapJob {
             // Emit the result as a Tuple3: (geoHash, minute timestamp, count)
             out.collect(Tuple3.of(geo, minuteTs, cnt));
         }
-
-
     }
-
 
 }

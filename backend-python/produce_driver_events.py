@@ -25,9 +25,8 @@ while True:
         "event_type": random.choice(['location_update']),
         "lat": lat,
         "lon": lon,
-        "timestamp": int(time.time())
+        "timestamp": int(time.time()) * 1000
     }
-
     producer.send(topic, event)
     print(f"Produced: {event}")
     time.sleep(1)
