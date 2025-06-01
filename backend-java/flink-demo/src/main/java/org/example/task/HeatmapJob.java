@@ -35,7 +35,7 @@ public class HeatmapJob {
 
         // Create a FlinkKafkaConsumer to read from the Kafka topic
 //        {
-//            "driver_id": "driver-654",
+//                "driver_id": "driver-654",
 //                "event_type": "location_update",
 //                "lat": 51.571783,
 //                "lon": 4.785065,
