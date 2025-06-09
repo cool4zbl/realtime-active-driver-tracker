@@ -32,6 +32,7 @@ under the License.
 		<flink.version>1.20.1</flink.version>
 		<target.java.version>1.8</target.java.version>
 		<scala.binary.version>2.12</scala.binary.version>
+		<hadoop.version>3.3.6</hadoop.version>
 		<maven.compiler.source>${target.java.version}</maven.compiler.source>
 		<maven.compiler.target>${target.java.version}</maven.compiler.target>
 		<log4j.version>2.17.1</log4j.version>
@@ -78,6 +79,55 @@ under the License.
 			<groupId>org.apache.flink</groupId>
 			<artifactId>flink-connector-kafka</artifactId>
 			<version>3.3.0-1.20</version>
+		</dependency>
+
+		<!-- File connector for FileSink -->
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-connector-files</artifactId>
+			<version>${flink.version}</version>
+		</dependency>
+
+		<!-- S3 filesystem support -->
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-s3-fs-hadoop</artifactId>
+			<version>${flink.version}</version>
+		</dependency>
+		<!-- ❶ FileSink + Parquet BulkFormat -->
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-parquet</artifactId>
+			<version>${flink.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- ❷ Avro tools（Schema ↔ Row 转换）-->
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-avro</artifactId>
+			<version>${flink.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- Table API for DataTypes -->
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-table-api-java-bridge</artifactId>
+			<version>${flink.version}</version>
+		</dependency>
+
+		<!-- ❸ Hadoop S3A 文件系统 -->
+		<dependency>
+			<groupId>org.apache.hadoop</groupId>
+			<artifactId>hadoop-aws</artifactId>
+			<version>${hadoop.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>s3</artifactId>
+			<version>2.25.25</version>        <!-- 与 hadoop-aws 3.3.6 兼容 -->
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- GeoHash util -->
@@ -151,6 +201,9 @@ under the License.
 									<exclude>com.google.code.findbugs:jsr305</exclude>
 									<exclude>org.slf4j:*</exclude>
 									<exclude>org.apache.logging.log4j:*</exclude>
+									<exclude>org.apache.flink:*</exclude>
+									<exclude>org.apache.hadoop:*</exclude>
+									<exclude>software.amazon.awssdk:*</exclude>
 								</excludes>
 							</artifactSet>
 							<filters>
@@ -168,7 +221,7 @@ under the License.
 							<transformers>
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>org.example.task.HeatmapJob</mainClass>
+									<mainClass>org.example.task.RealtimeJob</mainClass>
 								</transformer>
 							</transformers>
 						</configuration>
